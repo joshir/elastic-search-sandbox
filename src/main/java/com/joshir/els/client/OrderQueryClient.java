@@ -5,6 +5,7 @@ import com.joshir.els.domain.OrderIndex;
 import com.joshir.els.mapper.JsonMapperHelper;
 import com.joshir.els.utils.Queries;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Service
+@Primary
 public class OrderQueryClient implements ElasticQueryClient<OrderIndex> {
   private final ElasticsearchOperations elasticsearchOperations;
   private final Queries queries;
