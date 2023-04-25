@@ -2,10 +2,12 @@ package com.joshir.els.client;
 
 import com.joshir.els.configurations.ElasticSearchProps;
 import com.joshir.els.domain.OrderIndex;
+import com.joshir.els.logging.LoggingConstants;
 import com.joshir.els.mapper.JsonMapperHelper;
 import com.joshir.els.utils.DocConverter;
 import com.joshir.els.utils.Queries;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.IndexedObjectInformation;
@@ -46,7 +48,7 @@ public class OrderClient implements ElasticQueryClient<OrderIndex>, ElasticIndex
       .map(IndexedObjectInformation::getId)
       .collect(Collectors.toList());
 
-    log.info("batched index for doc ids {} ...",ids.stream().limit(5) );
+    log.info("batched index for doc ids {} ... for requestId {}",ids.stream().limit(5), MDC.get(LoggingConstants.CORRELATION_ID_LOG_VAR_NAME));
     return ids;
   }
 
@@ -56,7 +58,7 @@ public class OrderClient implements ElasticQueryClient<OrderIndex>, ElasticIndex
     SearchHit<OrderIndex> searchHit = elasticsearchOperations
             .searchOne(queries.getQueryById(id), OrderIndex.class, IndexCoordinates.of(elasticSearchProps.getIndex()));
     if(searchHit==null){
-      log.error("no documents found for id: {}",id);
+      log.error("no documents found for id: {} for requestId {}",id, MDC.get(LoggingConstants.CORRELATION_ID_LOG_VAR_NAME));
     }
     log.info("found {} for id: {}", JsonMapperHelper.writeToJson(searchHit.getContent()), id);
     return searchHit.getContent();
@@ -70,7 +72,7 @@ public class OrderClient implements ElasticQueryClient<OrderIndex>, ElasticIndex
       IndexCoordinates.of(elasticSearchProps.getIndex()));
     Stream<SearchHit<OrderIndex>> searchHitsStream = searchHits.stream();
     List<OrderIndex> orders = searchHitsStream.map(SearchHit::getContent).collect(Collectors.toList());
-    log.info("retrieved {} docs for field: {} with desc: {}",orders.size(), elasticSearchProps.getField(), desc);
+    log.info("retrieved {} docs for field: {} with desc: {} for request id {}",orders.size(), elasticSearchProps.getField(), desc,  MDC.get(LoggingConstants.CORRELATION_ID_LOG_VAR_NAME));
     return orders;
   }
 
@@ -82,7 +84,7 @@ public class OrderClient implements ElasticQueryClient<OrderIndex>, ElasticIndex
       IndexCoordinates.of(elasticSearchProps.getIndex()));
     Stream<SearchHit<OrderIndex>> searchHitsStream = searchHits.stream();
     List<OrderIndex> orders = searchHitsStream.map(SearchHit::getContent).collect(Collectors.toList());
-    log.info("retrieved {} for search all ",orders.size());
+    log.info("retrieved {} for search all for requestId {}",orders.size(), MDC.get(LoggingConstants.CORRELATION_ID_LOG_VAR_NAME));
     return orders;
   }
 }
