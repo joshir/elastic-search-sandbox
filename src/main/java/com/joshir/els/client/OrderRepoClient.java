@@ -3,8 +3,10 @@ package com.joshir.els.client;
 import com.joshir.els.domain.OrderIndex;
 import com.joshir.els.exceptions.OrderQueryClientException;
 import com.joshir.els.mapper.JsonMapperHelper;
+import com.joshir.els.repository.OrderIndexingRepository;
 import com.joshir.els.repository.OrderQueryRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -13,11 +15,14 @@ import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
-public class OrderQueryRepoClient implements ElasticQueryClient<OrderIndex> {
+@ConditionalOnProperty(name="el-search-config-props.is-repo", havingValue="true",matchIfMissing=true)
+public class OrderRepoClient implements ElasticQueryClient<OrderIndex>, ElasticIndexingClient<OrderIndex> {
   private final OrderQueryRepository  orderQueryRepository;
+  private final OrderIndexingRepository orderIndexingRepository;
 
-  public OrderQueryRepoClient(OrderQueryRepository orderQueryRepository) {
+  public OrderRepoClient(OrderQueryRepository orderQueryRepository, OrderIndexingRepository orderIndexingRepository) {
     this.orderQueryRepository = orderQueryRepository;
+    this.orderIndexingRepository = orderIndexingRepository;
   }
 
   @Override
@@ -44,5 +49,17 @@ public class OrderQueryRepoClient implements ElasticQueryClient<OrderIndex> {
         .collect(Collectors.toList());
     log.info("batched index for doc ids {} ...", JsonMapperHelper.writeToJson(orders.stream().limit(5) ));
     return orders;
+  }
+
+
+  @Override
+  public List<String> save(List<OrderIndex> indexes) {
+    Iterator<OrderIndex> it = orderIndexingRepository.saveAll(indexes).iterator();
+    List<OrderIndex> orders =
+            StreamSupport.stream(Spliterators.spliteratorUnknownSize(it, Spliterator.ORDERED), false)
+                    .collect(Collectors.toList());
+    List<String> ids = orders.stream().map(OrderIndex::getId).collect(Collectors.toList());
+    log.info("batched index for doc ids {} ...", ids.stream().limit(5) );
+    return ids;
   }
 }

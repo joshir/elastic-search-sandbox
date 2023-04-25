@@ -8,6 +8,7 @@ import com.joshir.els.mapper.exceptions.MappingException;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class JsonMapperHelper {
   private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -20,11 +21,18 @@ public class JsonMapperHelper {
     objectMapper.findAndRegisterModules();
   }
 
-  public static <T> List<T> parseJsonArray(String json,
-                                           Class<T> classOnWhichArrayIsDefined)
-          throws MappingException, ClassNotFoundException, JsonProcessingException {
-    Class<T[]> arrayClass = (Class<T[]>) Class.forName("[L" + classOnWhichArrayIsDefined.getName() + ";");
-    T[] objects = objectMapper.readValue(json, arrayClass);
+  public static <T> List<T> parseJsonArray(String json, Class<T> classOnWhichArrayIsDefined) throws MappingException {
+    Class<T[]> arrayClass = null ;
+    T[] objects = null;
+    try {
+      Objects.requireNonNull(classOnWhichArrayIsDefined);
+      arrayClass = (Class<T[]>) Class.forName("[L" + classOnWhichArrayIsDefined.getName() + ";");
+      objects = objectMapper.readValue(json, arrayClass);
+    } catch(ClassNotFoundException ex ){
+      throw new MappingException("Class " + classOnWhichArrayIsDefined.getName()+ "not found.");
+    } catch ( JsonProcessingException ex ){
+      throw new MappingException(ex);
+    }
     return Arrays.asList(objects);
   }
 

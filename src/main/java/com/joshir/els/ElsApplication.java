@@ -1,6 +1,6 @@
 package com.joshir.els;
 
-import com.joshir.els.client.OrderIndexingClient;
+import com.joshir.els.client.OrderClient;
 import com.joshir.els.domain.OrderIndex;
 import com.joshir.els.mapper.JsonMapperHelper;
 import com.joshir.els.mapper.exceptions.MappingException;
@@ -19,10 +19,10 @@ import java.util.List;
 @Slf4j
 public class ElsApplication implements CommandLineRunner {
 	private final Resource _data;
-	private final OrderIndexingClient orderIndexingClient;
+	private final OrderClient orderIndexingClient;
 
 	public ElsApplication(@Value("classpath:data/data.json") Resource data,
-												OrderIndexingClient orderIndexingClient) {
+												OrderClient orderIndexingClient) {
 		_data = data;
 		this.orderIndexingClient = orderIndexingClient;
 	}

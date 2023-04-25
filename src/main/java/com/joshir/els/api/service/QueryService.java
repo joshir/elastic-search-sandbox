@@ -8,5 +8,4 @@ public interface QueryService {
   QueryResponse getDocumentById(String id);
   List<QueryResponse> getDocumentByDescription(String desc);
   List<QueryResponse> getDocuments();
-
 }

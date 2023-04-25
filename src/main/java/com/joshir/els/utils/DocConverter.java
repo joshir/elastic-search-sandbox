@@ -13,15 +13,11 @@ import java.util.stream.Stream;
 public class DocConverter<T extends Indexable>{
   public List<IndexQuery> getIndexQueries(List<T> indexes) {
     Stream<T> indexStream = indexes.stream();
-    List<IndexQuery> queries = indexStream.map(
+    return indexStream.map(
       indexable ->
         new IndexQueryBuilder()
         .withId(indexable.getId())
         .withObject(indexable).build()
     ).collect(Collectors.toList());
-
-    return queries;
   }
-
-
 }

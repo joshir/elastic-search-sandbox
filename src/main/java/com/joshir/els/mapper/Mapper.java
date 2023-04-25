@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class Mapper {
-
   public QueryResponse toQueryResponse(OrderIndex order) {
     return QueryResponse.builder()
       .id(order.getId())

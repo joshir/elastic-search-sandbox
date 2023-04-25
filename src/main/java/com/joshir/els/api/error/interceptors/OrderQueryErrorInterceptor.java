@@ -1,8 +1,7 @@
 package com.joshir.els.api.error.interceptors;
 
-import co.elastic.clients.elasticsearch.nodes.Http;
-import co.elastic.clients.util.Pair;
 import com.joshir.els.mapper.JsonMapperHelper;
+import com.joshir.els.mapper.exceptions.MappingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,10 +10,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @ControllerAdvice
@@ -31,10 +28,10 @@ class OrderQueryErrorInterceptor {
     return ResponseEntity.badRequest().body(errorMap);
   }
 
-  @ExceptionHandler(AccessDeniedException.class)
-  public ResponseEntity<String> intercept(AccessDeniedException ex) {
+  @ExceptionHandler(MappingException.class)
+  public ResponseEntity<String> intercept(MappingException ex) {
     // TODO log.info("trace:");
-    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized.");
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Error.");
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
@@ -48,5 +45,4 @@ class OrderQueryErrorInterceptor {
     // TODO log.info("trace:");
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Error.");
   }
-
 }
