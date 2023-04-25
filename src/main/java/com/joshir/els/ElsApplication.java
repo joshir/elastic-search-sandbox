@@ -21,8 +21,7 @@ public class ElsApplication implements CommandLineRunner {
 	private final Resource _data;
 	private final OrderClient orderIndexingClient;
 
-	public ElsApplication(@Value("classpath:data/data.json") Resource data,
-												OrderClient orderIndexingClient) {
+	public ElsApplication(@Value("classpath:data/data.json") Resource data, OrderClient orderIndexingClient) {
 		_data = data;
 		this.orderIndexingClient = orderIndexingClient;
 	}
@@ -32,16 +31,13 @@ public class ElsApplication implements CommandLineRunner {
 	}
 
 	@Override
-	public void run(String... args) {
+	public void run(String... args) throws MappingException {
 		log.info("loading data from resource file ...");
 		List<OrderIndex> orders = null;
 		try {
-			orders = JsonMapperHelper
-				.parseJsonArray(_data.getContentAsString(Charset.defaultCharset()), OrderIndex.class);
-		} catch (ClassNotFoundException e) {
-			throw new MappingException("Class OrderIndex not found", e);
+			orders = JsonMapperHelper.parseJsonArray (_data.getContentAsString(Charset.defaultCharset()), OrderIndex.class);
 		} catch (IOException e) {
-			throw new MappingException("Error loading data from resource file", e);
+			throw new MappingException("error converting from ByteArray representation of json resource to String" , e);
 		}
 		log.info("successfully loaded data from resource file ...");
 		orderIndexingClient.save(orders);
