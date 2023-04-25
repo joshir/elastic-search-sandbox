@@ -1,7 +1,8 @@
 package com.joshir.els.client;
 
+import com.joshir.els.configurations.ElasticSearchProps;
 import com.joshir.els.domain.OrderIndex;
-import com.joshir.els.exceptions.OrderQueryClientException;
+import com.joshir.els.exceptions.OrderClientException;
 import com.joshir.els.mapper.JsonMapperHelper;
 import com.joshir.els.repository.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +17,10 @@ import java.util.stream.StreamSupport;
 @Service
 @ConditionalOnProperty(name="el-search-config-props.is-repo", havingValue="true",matchIfMissing=true)
 public class OrderRepoClient implements ElasticQueryClient<OrderIndex>, ElasticIndexingClient<OrderIndex> {
+  private final ElasticSearchProps elasticSearchProps;
   private final OrderRepository orderRepository;
-
-  public OrderRepoClient(OrderRepository orderIndexingRepository) {
+  public OrderRepoClient(ElasticSearchProps elasticSearchProps, OrderRepository orderIndexingRepository) {
+    this.elasticSearchProps = elasticSearchProps;
     this.orderRepository = orderIndexingRepository;
   }
 
@@ -26,7 +28,7 @@ public class OrderRepoClient implements ElasticQueryClient<OrderIndex>, ElasticI
   public OrderIndex getDocumentById(String id) {
     OrderIndex order = orderRepository
       .findById(id)
-      .orElseThrow(()-> new OrderQueryClientException("document for id: "+id+" not found"));
+      .orElseThrow(()-> new OrderClientException("document for id: "+id+" not found"));
     log.info("Found document: {} for id:", JsonMapperHelper.writeToJson(order),id);
     return order;
   }
@@ -34,7 +36,7 @@ public class OrderRepoClient implements ElasticQueryClient<OrderIndex>, ElasticI
   @Override
   public List<OrderIndex> getDocumentByDescription(String desc) {
     List<OrderIndex> orders =  orderRepository.findByDescription(desc);
-    log.info("Found document: {} for id:", JsonMapperHelper.writeToJson(orders), desc);
+    log.info("Found document: {} for field {}: {}", JsonMapperHelper.writeToJson(orders), elasticSearchProps.getField(), desc);
     return orders;
   }
 
@@ -44,10 +46,9 @@ public class OrderRepoClient implements ElasticQueryClient<OrderIndex>, ElasticI
     List<OrderIndex> orders = StreamSupport
       .stream(Spliterators.spliteratorUnknownSize(it, Spliterator.ORDERED), false)
       .collect(Collectors.toList());
-    log.info("batched index for doc ids {} ...", JsonMapperHelper.writeToJson(orders.stream().limit(5) ));
+    log.info("retrieved docs sucessfully for ids {} ...", JsonMapperHelper.writeToJson(orders.stream().limit(5) ));
     return orders;
   }
-
 
   @Override
   public List<String> save(List<OrderIndex> indexes) {
@@ -56,7 +57,7 @@ public class OrderRepoClient implements ElasticQueryClient<OrderIndex>, ElasticI
       .stream(Spliterators.spliteratorUnknownSize(it, Spliterator.ORDERED), false)
       .collect(Collectors.toList());
     List<String> ids = orders.stream().map(OrderIndex::getId).collect(Collectors.toList());
-    log.info("batched index for doc ids {} ...", ids.stream().limit(5) );
+    log.info("batch save for doc ids {} ...", ids.stream().limit(5) );
     return ids;
   }
 }

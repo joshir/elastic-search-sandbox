@@ -7,7 +7,6 @@ import com.joshir.els.utils.DocConverter;
 import com.joshir.els.utils.Queries;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.IndexedObjectInformation;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -42,10 +41,10 @@ public class OrderClient implements ElasticQueryClient<OrderIndex>, ElasticIndex
     IndexCoordinates coordinates = IndexCoordinates.of(elasticSearchProps.getIndex());
 
     List<String> ids = elasticsearchOperations
-            .bulkIndex(queries, coordinates)
-            .stream()
-            .map(IndexedObjectInformation::getId)
-            .collect(Collectors.toList());
+      .bulkIndex(queries, coordinates)
+      .stream()
+      .map(IndexedObjectInformation::getId)
+      .collect(Collectors.toList());
 
     log.info("batched index for doc ids {} ...",ids.stream().limit(5) );
     return ids;
@@ -66,9 +65,9 @@ public class OrderClient implements ElasticQueryClient<OrderIndex>, ElasticIndex
   @Override
   public List<OrderIndex> getDocumentByDescription(String desc) {
     SearchHits<OrderIndex> searchHits = elasticsearchOperations.search(
-            queries.getQueryByDescription(elasticSearchProps.getField(), desc),
-            OrderIndex.class,
-            IndexCoordinates.of(elasticSearchProps.getIndex()));
+      queries.getQueryByDescription(elasticSearchProps.getField(), desc),
+      OrderIndex.class,
+      IndexCoordinates.of(elasticSearchProps.getIndex()));
     Stream<SearchHit<OrderIndex>> searchHitsStream = searchHits.stream();
     List<OrderIndex> orders = searchHitsStream.map(SearchHit::getContent).collect(Collectors.toList());
     log.info("retrieved {} docs for field: {} with desc: {}",orders.size(), elasticSearchProps.getField(), desc);
@@ -78,9 +77,9 @@ public class OrderClient implements ElasticQueryClient<OrderIndex>, ElasticIndex
   @Override
   public List<OrderIndex> getDocuments() {
     SearchHits<OrderIndex> searchHits = elasticsearchOperations.search(
-            queries.getSearchAll(),
-            OrderIndex.class,
-            IndexCoordinates.of(elasticSearchProps.getIndex()));
+      queries.getSearchAll(),
+      OrderIndex.class,
+      IndexCoordinates.of(elasticSearchProps.getIndex()));
     Stream<SearchHit<OrderIndex>> searchHitsStream = searchHits.stream();
     List<OrderIndex> orders = searchHitsStream.map(SearchHit::getContent).collect(Collectors.toList());
     log.info("retrieved {} for search all ",orders.size());

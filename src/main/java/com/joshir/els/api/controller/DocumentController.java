@@ -27,11 +27,11 @@ public class DocumentController {
 
   @Operation(summary="get all docs from orders index")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description = "Success", content = {
-                  @Content(mediaType = "application/vnd.api.v1+json", schema = @Schema( implementation = QueryResponse.class))
-          }),
-          @ApiResponse(responseCode = "500", description = "Internal Error."),
-          @ApiResponse(responseCode = "400", description = "Not Found.")})
+    @ApiResponse(responseCode = "200", description = "Success", content = {
+      @Content(mediaType = "application/vnd.api.v1+json", schema = @Schema( implementation = QueryResponse.class))
+    }),
+    @ApiResponse(responseCode = "500", description = "Internal Error."),
+    @ApiResponse(responseCode = "400", description = "Not Found.")})
   @GetMapping
   @ResponseBody
   public ResponseEntity<List<QueryResponse>> getAllDocs() {
@@ -42,11 +42,11 @@ public class DocumentController {
 
   @Operation(summary="get doc from orders index by id")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description = "Success", content = {
-                  @Content(mediaType = "application/vnd.api.v1+json", schema = @Schema( implementation = QueryResponse.class))
-          }),
-          @ApiResponse(responseCode = "500", description = "Internal Error."),
-          @ApiResponse(responseCode = "400", description = "Not Found.")})
+    @ApiResponse(responseCode = "200", description = "Success", content = {
+      @Content(mediaType = "application/vnd.api.v1+json", schema = @Schema( implementation = QueryResponse.class))
+    }),
+    @ApiResponse(responseCode = "500", description = "Internal Error."),
+    @ApiResponse(responseCode = "400", description = "Not Found.")})
   @GetMapping("/{id}")
   @ResponseBody
   public ResponseEntity<QueryResponse> getDocumentById(@PathVariable @NotEmpty String id) {
@@ -57,11 +57,11 @@ public class DocumentController {
 
   @Operation(summary="get all docs from orders index")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description = "Success", content = {
-                  @Content(mediaType = "application/vnd.api.v1+json", schema = @Schema( implementation = QueryResponse.class))
-          }),
-          @ApiResponse(responseCode = "500", description = "Internal Error."),
-          @ApiResponse(responseCode = "400", description = "Not Found.")})
+    @ApiResponse(responseCode = "200", description = "Success", content = {
+      @Content(mediaType = "application/vnd.api.v1+json", schema = @Schema( implementation = QueryResponse.class))
+    }),
+    @ApiResponse(responseCode = "500", description = "Internal Error."),
+    @ApiResponse(responseCode = "400", description = "Not Found.")})
   @GetMapping
   @PostMapping("/description")
   public @ResponseBody ResponseEntity<List<QueryResponse>> getAllDocsByDescription(@RequestBody @Valid QueryRequest request){

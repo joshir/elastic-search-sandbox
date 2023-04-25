@@ -1,7 +1,7 @@
 package com.joshir.els.api.error.interceptors;
 
+import com.joshir.els.exceptions.MappingException;
 import com.joshir.els.mapper.JsonMapperHelper;
-import com.joshir.els.mapper.exceptions.MappingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

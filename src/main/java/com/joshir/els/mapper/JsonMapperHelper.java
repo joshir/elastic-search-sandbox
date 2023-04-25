@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.joshir.els.mapper.exceptions.MappingException;
+import com.joshir.els.exceptions.MappingException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +31,7 @@ public class JsonMapperHelper {
     } catch(ClassNotFoundException ex ){
       throw new MappingException("Class " + classOnWhichArrayIsDefined.getName()+ "not found.");
     } catch ( JsonProcessingException ex ){
-      throw new MappingException(ex);
+      throw new MappingException ("Error processing JSON" + ex);
     }
     return Arrays.asList(objects);
   }

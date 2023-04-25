@@ -2,8 +2,8 @@ package com.joshir.els;
 
 import com.joshir.els.client.OrderClient;
 import com.joshir.els.domain.OrderIndex;
+import com.joshir.els.exceptions.MappingException;
 import com.joshir.els.mapper.JsonMapperHelper;
-import com.joshir.els.mapper.exceptions.MappingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @SpringBootApplication
@@ -39,7 +40,8 @@ public class ElsApplication implements CommandLineRunner {
 		} catch (IOException e) {
 			throw new MappingException("error converting from ByteArray representation of json resource to String" , e);
 		}
-		log.info("successfully loaded data from resource file ...");
-		orderIndexingClient.save(orders);
+		orderIndexingClient
+			.save(orders)
+			.forEach(order -> log.info("order id: {} saved",order));
 	}
 }
